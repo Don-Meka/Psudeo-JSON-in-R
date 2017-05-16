@@ -1,0 +1,50 @@
+---
+title: "Reading Psuedo-JSON"
+author: "Emeka Nwosu"
+date: "November 30, 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+Today was my first experience working with JSON (JavaScript Object Notation) files and like always, nothing can ever be easy. I downloaded a JSON file of Amazon reviews figuring I could easily read it into R as a dataframe. I knew I had the rjson and jsonlite packages so I thought it woud be a matter of minutes until it was time to start working with the data. 
+
+I tried and tried and tried again to to use the fromJSON() functions from either package, but it was a no go. With some reasearch, I discovered there are "pseudo-JSON" files which, from my limited knolege seem to be formatted similarly to JSON, but not exactly. Fortunately, with a littl extra work and like one line of code, the psuedo-JSON file could be read into R.
+
+The data came from [here](http://jmcauley.ucsd.edu/data/amazon/). The link will take you to a page of with files for Amazon review separated by category. I was interested in the "Video Games" file (5-core). I downloaded the JSON file and saved it in my directory.
+
+The single line of code to read this type of pseudo-JSON is simply
+```{r}
+library(jsonlite)
+data <- fromJSON(sprintf("[%s]", paste(readLines("Video_Games_5.json"), collapse=",")))
+```
+
+That's all nice, but it's better to have some understanding of why the code works. So I will go through it inside out.
+
+```{r, include = FALSE}
+## JSON files can be read as text files. readLines() will read the file as such
+x <- readLines("Video_Games_5.json")
+
+## paste the text file with the collapse = "," argument to separate values with commas
+x2 <- paste(x, collapse = ",")
+
+## sprintf() is a function that wraps text. It comes from C, which I am not familiar with
+x3 <- sprintf("[%s]", x2)
+
+## finally you can use fromJSON()
+x4 <- fromJSON(x3)
+
+```
+
+Here's the data as a dataframe
+```{r}
+head(data)
+```
+
+
+Code came from [here](http://stackoverflow.com/questions/19725439/convert-pseudo-json-string-into-a-python-object)
+
+"collapse" argument details [here](https://www.r-bloggers.com/collapse-pasting-in-r/)
+
+sprintf in C [here](https://www.tutorialspoint.com/c_standard_library/c_function_sprintf.htm)
